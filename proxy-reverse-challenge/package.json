@@ -1,0 +1,14 @@
+{
+  "name": "fullcycle-desafio-2",
+  "version": "1.0.0",
+  "author": "Edson Lourenço <edcastanha@gmail.com>",
+  "description": "Desafio II Nginx Full Cycle",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "mysql": "^2.18.1"
+  }
+}
