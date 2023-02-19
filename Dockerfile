@@ -6,7 +6,7 @@ RUN apk add --update --no-cache wget \
   && addgroup -S nodejs \
   && adduser -S app -G nodejs
 
-COPY package*.json ./
+COPY ./proxy-reverse-challenge/package*.json ./
 RUN npm install
 
 COPY ./proxy-reverse-challenge/ .
