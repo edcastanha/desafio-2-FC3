@@ -1,4 +1,4 @@
-# desafio-2-FC3
+# Preoxy Reverso com Web App NodeJS
 
 Nesse desafio você colocará em prática o que aprendemos em relação a utilização do nginx como proxy reverso. A idéia principal é que quando um usuário acesse o nginx, o mesmo fará uma chamada em nossa aplicação node.js. Essa aplicação por sua vez adicionará um registro em nosso banco de dados mysql, cadastrando um nome na tabela people.
 
@@ -13,3 +13,25 @@ Gere o docker-compose de uma forma que basta apenas rodarmos: docker-compose up 
 Suba tudo em um repositório e faça a entrega.
 
 * A linguagem de programação para este desafio é Node/JavaScript.
+
+
+---
+
+DEPENDENCIAS:
+
+- Docker
+- Docker-compose
+
+COMANDOS:
+
+```
+git clone https://github.com/edcastanha/desafio-2-FC3.git
+cd desafio-2-fc3
+docker-compose up
+```
+
+ROTAS:
+
+- Listagem Nomes => http://localhost:8080/api/v1/people
+- Adicionar Nome => http://localhost:8080/api/v1/create-people
+  - body: {name: String}
