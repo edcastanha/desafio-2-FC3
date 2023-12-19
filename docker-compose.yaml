@@ -17,6 +17,8 @@ services:
     container_name: AppServer
     build:
       context: ./nodejs
+    command: ["npm", "test"] # Rodando Tests
+    #command: ["npm", "start"] # Inicia App
     environment:
       DB_HOST: mysql
       DB_USER: root

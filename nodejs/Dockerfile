@@ -14,4 +14,3 @@ COPY . .
 
 USER app
 
-CMD ["npm", "start"]

@@ -25,7 +25,7 @@ app.get('/', (req, res) => {
 });
 
 // Rota para buscar todas as pessoas
-app.get('/api/v1/people', async (req, res) => {
+app.get('/api/v1/people/', async (req, res) => {
   try {
     const rows = await db.query('SELECT * FROM people');
     res.status(200).json(rows); // Retorna os resultados da consulta como JSON
@@ -36,7 +36,7 @@ app.get('/api/v1/people', async (req, res) => {
 });
 
 // Rota para criar uma pessoa
-app.post('/api/v1/create-people', async (req, res) => {
+app.post('/api/v1/create-people/', async (req, res) => {
   const { name } = req.body;
 
   if (!name) {
@@ -65,7 +65,10 @@ process.on('SIGINT', async () => {
   }
 });
 
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor Node.js rodando na porta ${PORT}`);
 });
+
+module.exports = app; // Exportar a aplicação Express (app)

@@ -6,4 +6,4 @@ USE desafioDB;
 
 CREATE TABLE IF NOT EXISTS people (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255));
 
-INSERT INTO people (name) VALUES ('Pessoa Teste ');
+INSERT INTO people (name) VALUES ('Pessoa Teste');
