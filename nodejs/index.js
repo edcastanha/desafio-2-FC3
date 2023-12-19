@@ -1,78 +1,70 @@
 const express = require('express');
-const Database = require('./helps/connDB'); // Importa a classe de conexão com o banco de dados
+const Database = require('./helpers/connDB'); // Importa a classe de conexão com o banco de dados
 
 const app = express();
+app.use(express.json());
 
-
-// Exemplo de utilização dos dados da variável de ambiente
-console.log('Configurações do banco de dados:');
-console.log('Host:', dbConfig.host);
-console.log('Usuário:', dbConfig.user);
-console.log('Senha:', dbConfig.password);
-console.log('Nome do Banco de Dados:', dbConfig.database);
-// Configurações de conexão com o banco de dados
 const dbConfig = {
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME
+  database: process.env.DB_NAME,
 };
 
-// Instancia a classe de conexão com o banco de dados
 const db = new Database(dbConfig);
-db.connect(); // Conecta ao banco de dados
 
+// Conectar ao banco de dados
+db.connect().catch((err) => {
+  console.error('Erro ao conectar ao banco de dados:', err);
+  process.exit(1);
+});
 
+// Rota padrão
 app.get('/', (req, res) => {
-  connection.query('SELECT 1', (error, results) => {
-  if (error) {
-    console.error('Erro de conexão com o banco de dados:', error);
-    return res.status(500).send('Erro de conexão com o banco de dados');
+  res.send('<h1>Full Cycle Rocks!</h1>');
+});
+
+// Rota para buscar todas as pessoas
+app.get('/api/v1/people', async (req, res) => {
+  try {
+    const rows = await db.query('SELECT * FROM people');
+    res.status(200).json(rows); // Retorna os resultados da consulta como JSON
+  } catch (error) {
+    console.error('Erro ao executar a consulta:', error);
+    res.status(500).json({ error: 'Erro ao buscar pessoas' });
   }
-  
-  console.log('Conexão com o banco de dados estabelecida com sucesso');
-  res.status(200).send('OK');
-});
 });
 
-// Rota GET para obter nomes cadastrados
-app.get('/api/v1/people', (req, res) => {
-  db.query('SELECT * FROM people', (err, rows) => {
-    if (err) {
-      console.error('Erro ao buscar os nomes:', err);
-      res.status(500).send('Erro ao buscar os nomes na tabela.');
-      return;
-    }
-    res.send(rows); // Retorna os resultados como JSON
-  });
-});
-
-// Rota POST para criar um novo nome na tabela de pessoas
-app.post('/api/v1/create-people', express.json(), (req, res) => {
+// Rota para criar uma pessoa
+app.post('/api/v1/create-people', async (req, res) => {
   const { name } = req.body;
 
   if (!name) {
-    res.status(400).send('Nome não fornecido.');
-    return;
+    return res.status(400).json({ error: 'Nome não fornecido' });
   }
 
-  db.query('INSERT INTO people (name) VALUES (?)', [name], (err, result) => {
-    if (err) {
-      console.error('Erro ao inserir o nome:', err);
-      res.status(500).send('Erro ao inserir o nome na tabela.');
-      return;
-    }
-    res.send(`Nome "${name}" inserido com sucesso!`);
-  });
+  try {
+    console.log('Recebido o nome:', name);
+    await db.query('INSERT INTO people (name) VALUES (?)', [name]);
+    res.status(201).json({ message: `Nome "${name}" inserido com sucesso` });
+  } catch (error) {
+    console.error('Erro ao inserir o nome:', error);
+    res.status(500).json({ error: 'Erro ao inserir o nome na tabela' });
+  }
 });
 
-// Encerra a conexão com o banco de dados ao fechar o servidor
-process.on('SIGINT', () => {
-  db.close();
-  process.exit();
+// Encerramento da conexão com o banco de dados quando o aplicativo é encerrado
+process.on('SIGINT', async () => {
+  try {
+    await db.close(); // Fechando a conexão de forma assíncrona
+    console.log('Conexão com o banco de dados encerrada com sucesso');
+    process.exit(0); // Sair do processo com sucesso
+  } catch (error) {
+    console.error('Erro ao encerrar a conexão com o banco de dados:', error);
+    process.exit(1); // Sair do processo com erro
+  }
 });
 
-// Iniciar o servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor Node.js rodando na porta ${PORT}`);

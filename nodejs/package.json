@@ -1,14 +1,19 @@
 {
   "name": "fullcycle-desafio-2",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "author": "Edson Lourenço <edcastanha@gmail.com>",
   "description": "Desafio II Nginx Full Cycle",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "jest" // Adicionando o script de teste com Jest
   },
   "dependencies": {
     "express": "^4.18.2",
-    "mysql": "^2.18.1"
+    "mysql2": "^3.6.5"
+  },
+  "devDependencies": {
+    "jest": "^27.5.1", // Jest como dependência de desenvolvimento
+    "supertest": "^6.2.1" // Supertest como dependência de desenvolvimento
   }
 }

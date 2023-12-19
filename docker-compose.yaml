@@ -10,34 +10,40 @@ services:
       - ./proxy-reverse/nginx.conf:/etc/nginx/nginx.conf
     depends_on:
       - nodejs
+    networks:
+      - externo_network
 
   nodejs:
     container_name: AppServer
     build:
       context: ./nodejs
     environment:
-      DB_HOST: localhost
-      DB_USER: fullcycle
+      DB_HOST: mysql
+      DB_USER: root
       DB_PASSWORD: fullcycle
-      DB_NAME: fullcycle
+      DB_NAME: desafioDB
     depends_on:
       - mysql
+    networks:
+      - externo_network
+      - interno_network
 
   mysql:
     container_name: DbServer
     image: mysql:latest
     restart: always
     environment:
-      MYSQL_DATABASE: fullcycle
-      MYSQL_USER: fullcycle
-      MYSQL_PASSWORD: fullcycle
-      MYSQL_ROOT_PASSWORD: fullcycle123
+      MYSQL_DATABASE: desafioDB
+      MYSQL_ROOT_PASSWORD: fullcycle
     ports:
       - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    deploy:
-      
+    volumes:  
+      - ./mysql_data/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - interno_network
 
-volumes:
-  mysql_data:
+networks:
+  externo_network:
+    driver: bridge
+  interno_network:
+    driver: bridge
