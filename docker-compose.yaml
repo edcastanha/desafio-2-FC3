@@ -1,53 +1,51 @@
 version: '3'
 
 services:
-  node:
-    build: .
-    environment:
-      MYSQL_HOST: mysql
-      MYSQL_USER: root
-      MYSQL_PASSWORD: secret
-      MYSQL_DATABASE: people
+  nginx:
+    container_name: ProxyReverse
+    image: nginx:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - ./proxy-reverse/nginx.conf:/etc/nginx/nginx.conf
     depends_on:
-      mysql:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "curl", "--fail", "localhost:3000/healthcheck", "||", "exit 1"]
-      interval: 50s
-      timeout: 30s
-      retries: 5
+      - nodejs
     networks:
-      - app-network
+      - externo_network
+
+  nodejs:
+    container_name: AppServer
+    build:
+      context: ./nodejs
+    command: ["npm", "test"] # Rodando Tests
+    #command: ["npm", "start"] # Inicia App
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: fullcycle
+      DB_NAME: desafioDB
+    depends_on:
+      - mysql
+    networks:
+      - externo_network
+      - interno_network
 
   mysql:
-    image: mysql:5.7
+    container_name: DbServer
+    image: mysql:latest
+    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: secret
-      MYSQL_DATABASE: people
-    healthcheck:
-      test: ["CMD-SHELL", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 5s
-      timeout: 10s
-      retries: 5
-    volumes:
-      - mysql-data:/var/lib/mysql
-    networks:
-      - app-network
-
-  nginx:
-    image: nginx:latest
-    volumes:
-      - ./proxy-reverse-challenge/nginx.conf:/etc/nginx/nginx.conf
+      MYSQL_DATABASE: desafioDB
+      MYSQL_ROOT_PASSWORD: fullcycle
     ports:
-      - 8181:80
-    depends_on:
-      - node
+      - "3306:3306"
+    volumes:  
+      - ./mysql_data/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - app-network
-
-volumes:
-  mysql-data:
+      - interno_network
 
 networks:
-  app-network:
-    internal: true
+  externo_network:
+    driver: bridge
+  interno_network:
+    driver: bridge
